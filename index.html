@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐼 汉语声调小课堂 · 熊猫声调乐园</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #fef7e9;
+            font-family: 'Quicksand', 'Comic Neue', sans-serif;
+            color: #3e2a1f;
+            padding-bottom: 2rem;
+            position: relative;
+        }
+
+        /* 响应式 */
+        @media (max-width: 780px) {
+            .main-content { padding: 0 1rem; }
+            .nav-modules button { padding: 8px 16px; font-size: 0.8rem; }
+        }
+
+        /* 顶部栏 */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #fffef7;
+            padding: 0.8rem 2rem;
+            border-bottom: 3px solid #ffe0b0;
+        }
+        .title h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #f6a06c, #e38b5a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .teacher-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff1e0;
+            border-radius: 60px;
+            padding: 5px 16px;
+        }
+        .panda-icon {
+            font-size: 2.5rem;
+        }
+
+        /* 固定熊猫老师 (侧边) */
+        .fixed-teacher {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            z-index: 1000;
+            width: 130px;
+            background: rgba(255,248,235,0.9);
+            border-radius: 40px;
+            backdrop-filter: blur(6px);
+            padding: 8px 12px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+            border: 1px solid #ffd8a5;
+            transition: transform 0.2s;
+        }
+        .bubble-talk {
+            background: white;
+            border-radius: 24px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #d4813a;
+            text-align: center;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .bubble-talk:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 20px;
+            border-width: 8px 8px 0 8px;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+        }
+        .panda-avatar {
+            text-align: center;
+            font-size: 2.2rem;
+        }
+
+        /* 主容器 */
+        .main-content {
+            max-width: 1300px;
+            margin: 1.5rem auto;
+            background: #fffcf3;
+            border-radius: 48px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.05);
+            min-height: 70vh;
+        }
+
+        /* 导航按钮 */
+        .nav-modules {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .nav-btn {
+            background: #ffe2c4;
+            border: none;
+            border-radius: 60px;
+            padding: 0.7rem 1.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-btn:active { transform: scale(0.96); }
+        .nav-btn.active {
+            background: #fdba6a;
+            color: #2d2b26;
+            box-shadow: 0 4px 10px #f5bc7e;
+        }
+
+        /* 模块通用卡片 */
+        .module-container {
+            display: none;
+            animation: fadeSlide 0.2s ease;
+        }
+        .module-container.active-module {
+            display: block;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(8px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* 子板块 tab */
+        .sub-tabs {
+            display: flex;
+            gap: 12px;
+            border-bottom: 2px solid #ffddb0;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .sub-tab {
+            background: none;
+            border: none;
+            font-weight: 700;
+            padding: 8px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Quicksand',sans-serif;
+            transition: 0.1s;
+        }
+        .sub-tab.active-sub {
+            background: #ffcd94;
+            color: #492812;
+        }
+        .sub-content {
+            display: none;
+        }
+        .sub-content.active-subcontent {
+            display: block;
+        }
+
+        /* 练习区域 */
+        .practice-area {
+            background: #fff4e8;
+            border-radius: 32px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        .current-item {
+            background: #ffffff;
+            border-radius: 40px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px #f0e0cf;
+        }
+        .big-text {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0 15px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            border: none;
+            background: #fbe6d2;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .btn-primary {
+            background: #ffbb77;
+            color: #3e2a1f;
+        }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-wrongbook {
+            background: #ffd0a4;
+            color: #ad6230;
+        }
+        .progress-info {
+            font-size: 0.85rem;
+            text-align: center;
+            color: #b37b4a;
+        }
+
+        /* 测验选项区 */
+        .quiz-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .quiz-opt {
+            background: #fff0e0;
+            border: 1px solid #ffcf9a;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .quiz-opt:active { transform: scale(0.96);}
+
+        /* 错题本侧边抽屉 */
+        .mistake-drawer {
+            position: fixed;
+            top: 100px;
+            right: -320px;
+            width: 300px;
+            background: #fffaf2;
+            border-radius: 32px 0 0 32px;
+            box-shadow: -4px 8px 20px rgba(0,0,0,0.1);
+            padding: 1rem;
+            transition: 0.25s ease;
+            z-index: 1100;
+            border-left: 4px solid #f6a56e;
+        }
+        .mistake-drawer.open {
+            right: 0;
+        }
+        .mistake-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            border-bottom: 2px solid #ffd7ae;
+            padding-bottom: 8px;
+        }
+        .mistake-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 12px;
+            font-size: 0.8rem;
+        }
+        .toggle-mistake {
+            position: fixed;
+            top: 120px;
+            right: 0;
+            background: #fdae6e;
+            border-radius: 30px 0 0 30px;
+            padding: 10px 12px;
+            cursor: pointer;
+            z-index: 1101;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* 反馈toast动画 */
+        .feedback-toast {
+            position: fixed;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 60px;
+            padding: 12px 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1200;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-left: 7px solid;
+            animation: bouncePopup 0.4s ease forwards;
+        }
+        @keyframes bouncePopup {
+            0% { opacity: 0; transform: translateX(-50%) translateY(30px);}
+            70% { transform: translateX(-50%) translateY(-6px);}
+            100% { opacity: 1; transform: translateX(-50%) translateY(0);}
+        }
+        .toast-success { border-left-color: #7fb77e; background: #ebffea; color: #2b6e2b;}
+        .toast-fail { border-left-color: #f6a56e; background: #fff3e8; color: #b45f2b;}
+
+        /* 模拟视频区 */
+        .video-placeholder {
+            background: #e7dacb;
+            border-radius: 32px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #c7a26b;
+        }
+        i.speaker {
+            cursor: pointer;
+            margin-left: 8px;
+            color: #e8965a;
+        }
+        i.speaker:active { transform: scale(0.9);}
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="title"><h1>🐼 汉语声调小课堂 · Tone Master</h1></div>
+    <div class="teacher-badge"><i class="fas fa-panda panda-icon"></i> <span>AI熊猫伴学</span></div>
+</div>
+
+<!-- 固定熊猫老师+气泡 -->
+<div class="fixed-teacher" id="aiTeacher">
+    <div class="bubble-talk" id="teacherBubble">🎵 点击声调模块，跟我学～</div>
+    <div class="panda-avatar"><i class="fas fa-panda"></i> 🎋</div>
+</div>
+
+<!-- 错题本按钮 & 抽屉 -->
+<div class="toggle-mistake" id="toggleMistakeBtn"><i class="fas fa-book"></i> 错题本</div>
+<div class="mistake-drawer" id="mistakeDrawer">
+    <div class="mistake-header"><span>📘 我的错题本</span><i class="fas fa-times" id="closeMistake" style="cursor:pointer;"></i></div>
+    <div class="mistake-list" id="mistakeList">✨ 暂无错题，继续加油～</div>
+</div>
+
+<div class="main-content">
+    <!-- 导航区 -->
+    <div class="nav-modules" id="navModules">
+        <button class="nav-btn active" data-module="module1"><i class="fas fa-video"></i> 模块1 · 基础课堂</button>
+        <button class="nav-btn" data-module="module2"><i class="fas fa-microphone-alt"></i> 模块2 · 声调练习</button>
+        <button class="nav-btn" data-module="module3"><i class="fas fa-comments"></i> 模块3 · 语境练习</button>
+        <button class="nav-btn" data-module="module4"><i class="fas fa-puzzle-piece"></i> 模块4 · 测验</button>
+        <button class="nav-btn" data-module="module5"><i class="fas fa-star"></i> 模块5 · 进阶测验</button>
+    </div>
+
+    <!-- 模块1: 基础学习 (中央视频/讲解) -->
+    <div id="module1" class="module-container active-module">
+        <div class="video-placeholder">
+            <i class="fas fa-play-circle" style="font-size:3rem; color:#c58148;"></i>
+            <h3>🎥 声调小课堂 · 教学视频 (即将上线)</h3>
+            <p>后期可放置专业声调讲解视频，熊猫老师陪你学四声！</p>
+        </div>
+        <div style="text-align:center;">
+            <h2><i class="fas fa-chalkboard-teacher"></i> 四声基础 · Tone Basics</h2>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px; margin:20px 0;">
+                <div class="card" style="background:#fff2e4; border-radius:32px; padding:1rem; width:180px;"><div>一声 ˉ yī shēng</div><div>“Ahhh” 🎵</div><i class="fas fa-volume-up speaker" onclick="playTTS('一声 妈 mā')"></i></div>
+                <div class="card" style="background:#fff2e4; border-radius:32px; padding:1rem; width:180px;"><div>二声 ˊ èr shēng</div><div>“What?” 📈</div><i class="fas fa-volume-up speaker" onclick="playTTS('二声 麻 má')"></i></div>
+                <div class="card" style="background:#fff2e4; border-radius:32px; padding:1rem; width:180px;"><div>三声 ˇ sān shēng</div><div>“Well” 🎢</div><i class="fas fa-volume-up speaker" onclick="playTTS('三声 马 mǎ')"></i></div>
+                <div class="card" style="background:#fff2e4; border-radius:32px; padding:1rem; width:180px;"><div>四声 ˋ sì shēng</div><div>“No!” 📉</div><i class="fas fa-volume-up speaker" onclick="playTTS('四声 骂 mà')"></i></div>
+            </div>
+            <div class="tone-diagram" style="background:#ffefdf; border-radius:48px; padding:12px;">
+                🎼 五度调值示意：一声 5-5 · 二声 3-5 · 三声 2-1-4 · 四声 5-1<br>
+                <span style="font-weight:bold;">💡 教学技巧：英文模拟词帮助建立初步感觉，与实际声调不完全等同。</span><br>
+                <span style="font-size:0.8rem;">This technique helps initial sense, not entirely equivalent to actual tone.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 动态模块2,3,4,5 将通过js生成, 但为了方便结构，先留空容器，之后动态填充 -->
+    <div id="module2" class="module-container"></div>
+    <div id="module3" class="module-container"></div>
+    <div id="module4" class="module-container"></div>
+    <div id="module5" class="module-container"></div>
+</div>
+<footer>🐾 点击🔊喇叭 AI 自动生成标准读音 | 错题本自动记录错题 & 加入练习</footer>
+
+<script>
+    // ---------- 音频 AI生成 (Web Speech TTS) ----------
+    function playTTS(text) {
+        if (!window.speechSynthesis) { alert("浏览器不支持语音"); return; }
+        let utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.9;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // 全局错题本存储 (每个错题为字符串描述)
+    let mistakeList = [];
+    function addMistake(itemDesc, moduleName) {
+        const full = `【${moduleName}】${itemDesc}`;
+        if (!mistakeList.includes(full)) mistakeList.push(full);
+        updateMistakeUI();
+        showToast(`📖 已加入错题本: ${itemDesc}`, false);
+    }
+    function updateMistakeUI() {
+        const container = document.getElementById('mistakeList');
+        if (!container) return;
+        if (mistakeList.length === 0) container.innerHTML = '✨ 暂无错题，继续加油～';
+        else container.innerHTML = mistakeList.map((m, idx) => `<div style="margin-bottom:6px;">🔖 ${m} <i class="fas fa-trash-alt" style="color:#c57f3a; cursor:pointer;" data-idx="${idx}"></i></div>`).join('');
+        document.querySelectorAll('[data-idx]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                let idx = parseInt(el.getAttribute('data-idx'));
+                if (!isNaN(idx)) { mistakeList.splice(idx,1); updateMistakeUI(); showToast("已从错题本移除", true); }
+                e.stopPropagation();
+            });
+        });
+    }
+    function showToast(message, isSuccess=true) {
+        const toast = document.createElement('div');
+        toast.className = `feedback-toast ${isSuccess ? 'toast-success' : 'toast-fail'}`;
+        const emoji = isSuccess ? '🐼🎉✨' : '🐰🌱💪';
+        toast.innerHTML = `${emoji} ${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+        const bubble = document.getElementById('teacherBubble');
+        if(bubble) bubble.innerText = isSuccess ? '🎋 好棒！继续冲呀' : '💬 没关系，多听几次～';
+        setTimeout(()=>{if(bubble) bubble.innerText='🐼 熊猫陪你练声调';},2500);
+    }
+
+    // ---------- 定义各模块数据 (基于文档内容) ----------
+    // 模块2 声调练习: 子板块 单个字 / 词 / 词对
+    const module2Data = {
+        single: ["妈 mā","麻 má","马 mǎ","骂 mà","搭 dā","答 dá","打 dǎ","大 dà","翻 fān","烦 fán","返 fǎn","饭 fàn","汤 tāng","糖 táng","躺 tǎng","烫 tàng"],
+        words: ["咖啡 kā fēi","金鱼 jīn yú","书本 shū běn","鸡蛋 jī dàn","毛巾 máo jīn","牛排 niú pái","苹果 píng guǒ","邮票 yóu piào","电梯 diàn tī","课堂 kè táng","电脑 diàn nǎo","饭店 fàn diàn"],
+        pairs: ["搬家 bān jiā / 半价 bàn jià","司机 sī jī / 四季 sì jì","大学 dà xué / 大雪 dà xuě","熊猫 xióng māo / 胸毛 xiōng máo"]
+    };
+    // 模块3 语境练习: 短语列表 + 对比句子组
+    const module3Data = {
+        phrases: ["春天花开 chūn tiān huā kāi","人民团结 rén mín tuán jié","创造世界 chuàng zào shì jiè","坚持学习 jiān chí xué xí","非常容易 fēi cháng róng yì","绿色蔬菜 lǜ sè shū cài","绝对真理 jué duì zhēn lǐ","身体力行 shēn tǐ lì xíng","万马狂奔 wàn mǎ kuáng bēn"],
+        sentPairs: [
+            {text:"他在学汉语 tā zài xué hàn yǔ", contrast:"他在学韩语 tā zài xué hán yǔ"},
+            {text:"他和你 tā hé nǐ", contrast:"祝贺你 zhù hè nǐ"},
+            {text:"他在问问题 tā zài wèn wèn tí", contrast:"他在闻花香 tā zài wén huā xiāng"},
+            {text:"这电脑他要买 zhè diàn nǎo tā yào mǎi", contrast:"这电脑他要卖 zhè diàn nǎo tā yào mài"}
+        ]
+    };
+    // 模块4测验: 听音选声调(单字+词) + 看拼音选词
+    const toneQuizSingle = [
+        {char:"烦", correct:"fán", options:["fān","fán","fǎn","fàn"]},{char:"翻", correct:"fān", options:["fān","fán","fǎn","fàn"]},{char:"饭", correct:"fàn", options:["fān","fán","fǎn","fàn"]},{char:"返", correct:"fǎn", options:["fān","fán","fǎn","fàn"]},
+        {char:"汤", correct:"tāng", options:["tāng","táng","tǎng","tàng"]},{char:"躺", correct:"tǎng", options:["tāng","táng","tǎng","tàng"]},{char:"烫", correct:"tàng", options:["tāng","táng","tǎng","tàng"]},{char:"糖", correct:"táng", options:["tāng","táng","tǎng","tàng"]},
+        {char:"咸", correct:"xián", options:["xiān","xián","xiǎn","xiàn"]},{char:"酸", correct:"suān", options:["suān","suán","suǎn","suàn"]},{char:"苦", correct:"kǔ", options:["kū","kú","kǔ","kù"]},{char:"辣", correct:"là", options:["lā","lá","lǎ","là"]},{char:"甜", correct:"tián", options:["tiān","tián","tiǎn","tiàn"]}
+    ];
+    const toneQuizWord = [
+        {word:"咖啡", correct:"kā fēi", options:["kā fēi","kǎ fēi"]},{word:"金鱼", correct:"jīn yú", options:["jīn yú","jìn yù"]},{word:"书本", correct:"shū běn", options:["shū běn","shù běn"]},{word:"鸡蛋", correct:"jī dàn", options:["jī dàn","jǐ dān"]},
+        {word:"毛巾", correct:"máo jīn", options:["máo jīn","mào jìn"]},{word:"牛排", correct:"niú pái", options:["niú pái","niǔ pāi"]},{word:"苹果", correct:"píng guǒ", options:["píng guǒ","píng guò"]},{word:"邮票", correct:"yóu piào", options:["yóu piào","yòu piāo"]},
+        {word:"电梯", correct:"diàn tī", options:["diàn tī","diǎn tí"]},{word:"课堂", correct:"kè táng", options:["kè táng","kē táng"]},{word:"电脑", correct:"diàn nǎo", options:["diàn nǎo","diǎn nào"]},{word:"饭店", correct:"fàn diàn", options:["fàn diàn","fàn diǎn"]}
+    ];
+    const pinyinSelect = [
+        {pinyin:"bān jiā", options:["搬家","半价"], correct:"搬家"},{pinyin:"shì xiàn", options:["实现","视线"], correct:"实现"},{pinyin:"sì jì", options:["司机","四季"], correct:"四季"},{pinyin:"zhù lǐ", options:["助理","主力"], correct:"助理"},
+        {pinyin:"dà xué", options:["大学","大雪"], correct:"大学"},{pinyin:"dào lǐ", options:["道理","倒立"], correct:"道理"},{pinyin:"xióng māo", options:["熊猫","胸毛"], correct:"熊猫"},{pinyin:"shí jiān", options:["时间","实践"], correct:"时间"}
+    ];
+    // 模块5 句子进阶 + 口语列表
+    const sentenceQuiz = [
+        {sentence:"这电脑他要卖。", target:"卖", correct:"mài", options:["mǎi","mài"]},{sentence:"他和你。", target:"和", correct:"hé", options:["hé","hè"]},{sentence:"他在闻花香。", target:"闻", correct:"wén", options:["wèn","wén"]},
+        {sentence:"祝贺你！", target:"贺", correct:"hè", options:["hé","hè"]},{sentence:"他在学汉语。", target:"汉语", correct:"hàn yǔ", options:["hàn yǔ","hán yǔ"]},{sentence:"他在问问题。", target:"问", correct:"wèn", options:["wèn","wén"]},
+        {sentence:"这电脑他要买。", target:"买", correct:"mǎi", options:["mǎi","mài"]},{sentence:"他在学韩语。", target:"韩语", correct:"hán yǔ", options:["hàn yǔ","hán yǔ"]}
+    ];
+    const oralList = ["咖啡","金鱼","书本","鸡蛋","毛巾","牛排","苹果","邮票","电梯","课堂","电脑","饭店","搬家","半价","司机","四季","大学","大雪","熊猫","胸毛","时间","实践","道理","倒立","春天花开","人民团结","创造世界","坚持学习","他在学汉语","他在学韩语","他和你","祝贺你","这电脑他要买","这电脑他要卖"];
+
+    // ---------- 动态渲染模块 (支持子板块/下一步/加入错题) ----------
+    let currentModuleState = {}; // 存储每个模块下当前子板块 & 索引
+
+    function renderModule2() {
+        return buildExerciseModule("module2", "声调练习", module2Data, (item) => item);
+    }
+    function renderModule3() {
+        const flatPhrases = module3Data.phrases.map(p => ({type:"phrase", data:p}));
+        const flatPairs = module3Data.sentPairs.map((pair,idx) => ({type:"pair", data:`${pair.text}  ⇄  ${pair.contrast}`, rawPair:pair}));
+        const combined = [...flatPhrases, ...flatPairs];
+        return buildExerciseModuleGeneric("module3", "语境练习", combined, (item) => {
+            if(item.type === "phrase") return item.data;
+            else return item.data;
+        });
+    }
+    function buildExerciseModule(moduleId, title, dataObj, displayFunc) {
+        const tabs = [{key:"single", label:"🔊 单个字"},{key:"words", label:"📖 双字词"},{key:"pairs", label:"🎯 词对"}];
+        const getItems = (key) => dataObj[key];
+        return buildTabbedExercise(moduleId, title, tabs, getItems, displayFunc);
+    }
+    function buildExerciseModuleGeneric(moduleId, title, itemsList, displayFunc) {
+        // 只有1个虚拟tab
+        const tabs = [{key:"main", label:"📚 练习内容"}];
+        const getItems = () => itemsList;
+        return buildTabbedExercise(moduleId, title, tabs, getItems, (item) => displayFunc(item), true);
+    }
+    function buildTabbedExercise(moduleId, title, tabs, getItemsFunc, displayFunc, isGeneric=false) {
+        const storageKey = `${moduleId}_state`;
+        let state = currentModuleState[moduleId] || { currentTab: tabs[0].key, index:0 };
+        if(!currentModuleState[moduleId]) currentModuleState[moduleId] = state;
+        const items = getItemsFunc(state.currentTab);
+        const currentItem = items ? items[state.index] : null;
+        const total = items ? items.length : 0;
+        const nextDisabled = state.index+1 >= total;
+        const displayContent = currentItem ? displayFunc(currentItem) : "无数据";
+        const extraHint = !isGeneric && state.currentTab==="pairs" ? " (对比词对)" : "";
+        return `
+            <div class="sub-tabs" id="tabs-${moduleId}">
+                ${tabs.map(tab => `<button class="sub-tab ${state.currentTab===tab.key ? 'active-sub' : ''}" data-tab="${tab.key}">${tab.label}</button>`).join('')}
+            </div>
+            <div class="practice-area">
+                <div class="current-item">
+                    <div class="big-text">📖 ${displayContent}${extraHint}</div>
+                    <i class="fas fa-volume-up speaker" style="font-size:1.5rem;" onclick="playTTS('${displayContent.replace(/[\/]/g,' ')}')"></i>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-wrongbook" id="addMistakeBtn_${moduleId}"><i class="fas fa-book"></i> 加入错题本</button>
+                    <button class="btn btn-primary" id="nextBtn_${moduleId}" ${nextDisabled ? 'disabled style="opacity:0.5;"' : ''}>下一步 ➡️</button>
+                </div>
+                <div class="progress-info">第 ${state.index+1} / ${total} 项</div>
+            </div>
+        `;
+    }
+
+    // 模块4测验复杂: 含听音选调(字+词) 和 看拼音选词，每个子板块独立下一步，交互答题，错题记录
+    function renderModule4() {
+        return renderQuizComplex();
+    }
+    function renderQuizComplex() {
+        const tabs = [
+            {key:"singleTone", label:"🎧 单字听音选调"},
+            {key:"wordTone", label:"🎧 词语听音选调"},
+            {key:"pinyinWord", label:"📖 看拼音选词"}
+        ];
+        let state = currentModuleState["module4"] || { currentTab:"singleTone", index:0, answerStatus:{} };
+        if(!currentModuleState["module4"]) currentModuleState["module4"] = state;
+        let currentList = [];
+        if(state.currentTab === "singleTone") currentList = toneQuizSingle;
+        else if(state.currentTab === "wordTone") currentList = toneQuizWord;
+        else currentList = pinyinSelect;
+        const currentQ = currentList[state.index];
+        const total = currentList.length;
+        let content = '';
+        if(state.currentTab !== "pinyinWord") {
+            const q = currentQ;
+            content = `<div class="current-item"><div>🔊 ${q.char || q.word} <i class="fas fa-volume-up speaker" onclick="playTTS('${q.char || q.word}')"></i></div>
+            <div class="quiz-options" id="quizOptions">${q.options.map(opt => `<button class="quiz-opt" data-val="${opt}">${opt}</button>`).join('')}</div></div>`;
+        } else {
+            const q = currentQ;
+            content = `<div class="current-item"><div>📌 拼音: <strong>${q.pinyin}</strong> <i class="fas fa-volume-up speaker" onclick="playTTS('${q.pinyin}')"></i></div>
+            <div class="quiz-options" id="quizOptions">${q.options.map(opt => `<button class="quiz-opt" data-val="${opt}">${opt}</button>`).join('')}</div></div>`;
+        }
+        return `
+            <div class="sub-tabs" id="tabs-module4">
+                ${tabs.map(tab => `<button class="sub-tab ${state.currentTab===tab.key ? 'active-sub' : ''}" data-tab="${tab.key}">${tab.label}</button>`).join('')}
+            </div>
+            <div class="practice-area">
+                ${content}
+                <div class="action-buttons">
+                    <button class="btn btn-wrongbook" id="addMistakeBtn_module4"><i class="fas fa-book"></i> 加入错题本</button>
+                    <button class="btn btn-primary" id="nextBtn_module4" ${state.index+1>=total ? 'disabled' : ''}>下一步 ➡️</button>
+                </div>
+                <div class="progress-info">第 ${state.index+1} / ${total} 题</div>
+            </div>
+        `;
+    }
+    function renderModule5() {
+        const tabs = [
+            {key:"sentenceQuiz", label:"🎧 句子听音选调"},
+            {key:"oralTest", label:"🎙️ 口语发音测验 (预留接口)"}
+        ];
+        let state = currentModuleState["module5"] || { currentTab:"sentenceQuiz", index:0 };
+        if(!currentModuleState["module5"]) currentModuleState["module5"] = state;
+        let content = '';
+        if(state.currentTab === "sentenceQuiz") {
+            const q = sentenceQuiz[state.index];
+            if(q) {
+                content = `<div class="current-item"><div>📖 句子: ${q.sentence} <i class="fas fa-volume-up speaker" onclick="playTTS('${q.sentence}')"></i></div>
+                <div>划线字: <mark>${q.target}</mark> 选择正确声调:</div>
+                <div class="quiz-options" id="quizOptions5">${q.options.map(opt => `<button class="quiz-opt" data-val="${opt}">${opt}</button>`).join('')}</div></div>`;
+            } else content="<div>完成啦！</div>";
+        } else {
+            content = `<div class="current-item"><p>🎙️ 口语测验列表 (录音接口预留) 点击下方按钮录制发音，需对接语音评测API</p>
+            <div style="max-height:250px; overflow:auto;">${oralList.map(item => `<div style="margin:6px;">🔊 ${item} <i class="fas fa-microphone" style="cursor:pointer;" onclick="alert('录音模拟接口，实际可对接WebRTC+语音评测。所选内容:${item}')"></i> <i class="fas fa-volume-up speaker" onclick="playTTS('${item}')"></i></div>`).join('')}</div></div>`;
+        }
+        const totalSent = sentenceQuiz.length;
+        const nextDisabled = (state.currentTab === "sentenceQuiz") && (state.index+1 >= totalSent);
+        return `
+            <div class="sub-tabs" id="tabs-module5">
+                ${tabs.map(tab => `<button class="sub-tab ${state.currentTab===tab.key ? 'active-sub' : ''}" data-tab="${tab.key}">${tab.label}</button>`).join('')}
+            </div>
+            <div class="practice-area">
+                ${content}
+                <div class="action-buttons">
+                    <button class="btn btn-wrongbook" id="addMistakeBtn_module5"><i class="fas fa-book"></i> 加入错题本</button>
+                    <button class="btn btn-primary" id="nextBtn_module5" ${nextDisabled ? 'disabled' : ''}>下一步 ➡️</button>
+                </div>
+                <div class="progress-info">${state.currentTab==='sentenceQuiz'?`第 ${state.index+1}/${totalSent} 句`:'口语练习区'}</div>
+            </div>
+        `;
+    }
+
+    // 渲染调度 & 事件绑定
+    function renderCurrentModule(moduleId) {
+        const containers = ['module1','module2','module3','module4','module5'];
+        containers.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.classList.remove('active-module');
+        });
+        const activeDiv = document.getElementById(moduleId);
+        if(activeDiv) activeDiv.classList.add('active-module');
+        if(moduleId === 'module2') activeDiv.innerHTML = renderModule2();
+        else if(moduleId === 'module3') activeDiv.innerHTML = renderModule3();
+        else if(moduleId === 'module4') activeDiv.innerHTML = renderModule4();
+        else if(moduleId === 'module5') activeDiv.innerHTML = renderModule5();
+        else if(moduleId === 'module1') activeDiv.innerHTML = document.getElementById('module1').innerHTML; // retain original
+        attachModuleEvents(moduleId);
+    }
+    function attachModuleEvents(moduleId) {
+        if(moduleId === 'module2') attachExerciseEvents('module2', module2Data, (key, item)=>item);
+        if(moduleId === 'module3') {
+            const combined = [...module3Data.phrases.map(p=>({type:"phrase",data:p})), ...module3Data.sentPairs.map(p=>({type:"pair",data:`${p.text}  ⇄  ${p.contrast}`}))];
+            attachExerciseEventsGeneric('module3', combined, (item)=>item.type==='phrase'?item.data:item.data);
+        }
+        if(moduleId === 'module4') attachQuizEvents();
+        if(moduleId === 'module5') attachModule5Events();
+    }
+    function attachExerciseEvents(moduleId, dataObj, displayFunc) {
+        const tabs = ['single','words','pairs'];
+        const updateState = (tab, idx) => { currentModuleState[moduleId] = { currentTab:tab, index:idx }; renderCurrentModule(moduleId); };
+        document.querySelectorAll(`#tabs-${moduleId} .sub-tab`).forEach(btn => {
+            btn.onclick = () => { currentModuleState[moduleId] = { currentTab:btn.dataset.tab, index:0 }; renderCurrentModule(moduleId); };
+        });
+        const nextBtn = document.getElementById(`nextBtn_${moduleId}`);
+        if(nextBtn) nextBtn.onclick = () => {
+            let state = currentModuleState[moduleId];
+            const items = dataObj[state.currentTab];
+            if(state.index+1 < items.length) { state.index++; renderCurrentModule(moduleId); }
+        };
+        const addBtn = document.getElementById(`addMistakeBtn_${moduleId}`);
+        if(addBtn) addBtn.onclick = () => {
+            let state = currentModuleState[moduleId];
+            let items = dataObj[state.currentTab];
+            let cur = items[state.index];
+            addMistake(displayFunc(cur), "声调练习");
+        };
+    }
+    function attachExerciseEventsGeneric(moduleId, itemsList, displayFunc) {
+        const updateState = (idx) => { currentModuleState[moduleId] = { currentTab:'main', index:idx }; renderCurrentModule(moduleId); };
+        document.querySelectorAll(`#tabs-${moduleId} .sub-tab`).forEach(btn => { btn.onclick = () => { currentModuleState[moduleId] = { currentTab:'main', index:0 }; renderCurrentModule(moduleId); };});
+        const nextBtn = document.getElementById(`nextBtn_${moduleId}`);
+        if(nextBtn) nextBtn.onclick = () => { let s = currentModuleState[moduleId]; if(s.index+1 < itemsList.length) { s.index++; renderCurrentModule(moduleId); } };
+        const addBtn = document.getElementById(`addMistakeBtn_${moduleId}`);
+        if(addBtn) addBtn.onclick = () => { let s = currentModuleState[moduleId]; let cur = itemsList[s.index]; addMistake(displayFunc(cur), "语境练习"); };
+    }
+    function attachQuizEvents() {
+        let state = currentModuleState["module4"];
+        const tabs = ['singleTone','wordTone','pinyinWord'];
+        document.querySelectorAll('#tabs-module4 .sub-tab').forEach(btn => {
+            btn.onclick = () => { state.currentTab = btn.dataset.tab; state.index = 0; renderCurrentModule('module4'); };
+        });
+        const nextBtn = document.getElementById('nextBtn_module4');
+        if(nextBtn) nextBtn.onclick = () => {
+            let list = state.currentTab==='singleTone'?toneQuizSingle:state.currentTab==='wordTone'?toneQuizWord:pinyinSelect;
+            if(state.index+1 < list.length) { state.index++; renderCurrentModule('module4'); }
+        };
+        const addBtn = document.getElementById('addMistakeBtn_module4');
+        if(addBtn) addBtn.onclick = () => {
+            let list = state.currentTab==='singleTone'?toneQuizSingle:state.currentTab==='wordTone'?toneQuizWord:pinyinSelect;
+            let cur = list[state.index];
+            let desc = cur.char || cur.word || cur.pinyin;
+            addMistake(desc, "测验");
+        };
+        const optsDiv = document.getElementById('quizOptions');
+        if(optsDiv) optsDiv.querySelectorAll('.quiz-opt').forEach(opt => {
+            opt.onclick = () => {
+                let selected = opt.dataset.val;
+                let list = state.currentTab==='singleTone'?toneQuizSingle:state.currentTab==='wordTone'?toneQuizWord:pinyinSelect;
+                let cur = list[state.index];
+                let isCorrect = (selected === cur.correct);
+                if(isCorrect) showToast("🎉 答对了！太厉害了", true);
+                else { showToast(`❌ 正确答案是 ${cur.correct}，继续加油`, false); addMistake(cur.char||cur.word||cur.pinyin, "测验"); }
+            };
+        });
+    }
+    function attachModule5Events() {
+        let state = currentModuleState["module5"];
+        document.querySelectorAll('#tabs-module5 .sub-tab').forEach(btn => {
+            btn.onclick = () => { state.currentTab = btn.dataset.tab; state.index = 0; renderCurrentModule('module5'); };
+        });
+        const nextBtn = document.getElementById('nextBtn_module5');
+        if(nextBtn && state.currentTab === 'sentenceQuiz') nextBtn.onclick = () => { if(state.index+1 < sentenceQuiz.length) { state.index++; renderCurrentModule('module5'); } };
+        const addBtn = document.getElementById('addMistakeBtn_module5');
+        if(addBtn) addBtn.onclick = () => { if(state.currentTab==='sentenceQuiz') addMistake(sentenceQuiz[state.index].sentence, "进阶测验"); else addMistake("口语测验项", "进阶测验"); };
+        const optsDiv = document.getElementById('quizOptions5');
+        if(optsDiv && state.currentTab === 'sentenceQuiz') {
+            optsDiv.querySelectorAll('.quiz-opt').forEach(opt => {
+                opt.onclick = () => { let cur = sentenceQuiz[state.index]; if(opt.dataset.val === cur.correct) showToast("🎉 句子声调正确！", true); else { showToast(`💪 正确声调是 ${cur.correct}`, false); addMistake(cur.sentence, "进阶句子"); } };
+            });
+        }
+    }
+
+    // 导航切换
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const mod = btn.dataset.module;
+            renderCurrentModule(mod);
+        });
+    });
+    // 错题本抽屉
+    const drawer = document.getElementById('mistakeDrawer');
+    document.getElementById('toggleMistakeBtn').onclick = () => drawer.classList.toggle('open');
+    document.getElementById('closeMistake').onclick = () => drawer.classList.remove('open');
+    // 初始渲染模块1可见
+    renderCurrentModule('module1');
+    window.playTTS = playTTS;
+</script>
+</body>
+</html>
